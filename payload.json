@@ -1,0 +1,11 @@
+{
+  "issue": {
+    "key": "TEST-1",
+    "fields": {
+      "status": {
+        "name": "Ready for Spec Review"
+      }
+    }
+  },
+  "webhookEvent": "jira:issue_updated"
+}
