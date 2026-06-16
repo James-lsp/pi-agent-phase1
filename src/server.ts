@@ -13,6 +13,40 @@ const app = express();
 
 app.use(express.json());
 
+function validateWebhookSecret(req: Request):
+  | { ok: true }
+  | { ok: false; statusCode: number; message: string } {
+  const expectedSecret = process.env.WEBHOOK_SHARED_SECRET;
+
+  if (!expectedSecret) {
+    return {
+      ok: false,
+      statusCode: 500,
+      message: "Webhook shared secret is not configured"
+    };
+  }
+
+  const receivedSecret = req.header("x-pi-webhook-secret");
+
+  if (!receivedSecret) {
+    return {
+      ok: false,
+      statusCode: 401,
+      message: "Missing webhook shared secret"
+    };
+  }
+
+  if (receivedSecret !== expectedSecret) {
+    return {
+      ok: false,
+      statusCode: 401,
+      message: "Invalid webhook shared secret"
+    };
+  }
+
+  return { ok: true };
+}
+
 const JiraWebhookSchema = z.looseObject({
   webhookEvent: z.string().optional(),
 
@@ -73,6 +107,14 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 
 app.post("/webhooks/jira", async(req: Request, res: Response) => {
+  const secretCheck = validateWebhookSecret(req);
+
+if (!secretCheck.ok) {
+  return res.status(secretCheck.statusCode).json({
+    accepted: false,
+    error: secretCheck.message
+  });
+}
   const parsed = JiraWebhookSchema.safeParse(req.body);
 
   if (!parsed.success) {
