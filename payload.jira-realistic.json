@@ -1,0 +1,50 @@
+{
+  "timestamp": 1730000000000,
+  "webhookEvent": "jira:issue_updated",
+  "source": "dummy-jira-webhook",
+  "issue": {
+    "id": "10001",
+    "key": "PITEST-1",
+    "fields": {
+      "summary": "Dummy spec review ticket",
+      "description": {
+        "type": "doc",
+        "version": 1,
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This is dummy Jira ticket data for testing Pi Agent Phase 1."
+              }
+            ]
+          }
+        ]
+      },
+      "status": {
+        "id": "10042",
+        "name": "Ready for Spec Review",
+        "description": "Ticket is ready for automated spec review.",
+        "statusCategory": {
+          "key": "indeterminate",
+          "name": "In Progress"
+        }
+      }
+    }
+  },
+  "changelog": {
+    "id": "20001",
+    "items": [
+      {
+        "field": "status",
+        "fieldtype": "jira",
+        "fieldId": "status",
+        "from": "3",
+        "fromString": "In Progress",
+        "to": "10042",
+        "toString": "Ready for Spec Review"
+      }
+    ]
+  }
+}

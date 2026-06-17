@@ -4,6 +4,8 @@ import { postJiraCommentMock } from "../lib/jiraClient.js";
 export type SpecReviewWorkflowInput = {
   issueKey: string;
   statusName: string;
+  summary?: string;
+  descriptionText?: string;
 };
 
 export type SpecReviewWorkflowResult = {
@@ -26,6 +28,8 @@ export async function runSpecReviewWorkflow(
 ): Promise<SpecReviewWorkflowResult> {
   const workflowName = "spec_review_trigger";
   const executionId = createExecutionId(input.issueKey);
+  const summary = input.summary ?? "No summary provided";
+  const descriptionText = input.descriptionText ?? "No description provided";
 
   auditLog({
     executionId,
@@ -47,29 +51,32 @@ export async function runSpecReviewWorkflow(
       input: {
         issueKey: input.issueKey
       },
-      output: {
-        issueKey: input.issueKey,
-        summary: "Mock Jira ticket summary",
-        statusName: input.statusName
-      }
+     output: {
+  issueKey: input.issueKey,
+  summary,
+  descriptionText,
+  statusName: input.statusName
+}
     });
 
     if (input.issueKey === "TEST-FAIL") {
       throw new Error("Simulated workflow failure for testing error handling.");
     }
 
-    const commentPreview = [
-      `Pi Spec Review Result for ${input.issueKey}`,
-      "",
-      "This is a mock Phase 1 review.",
-      "The real LLM review will be added later.",
-      "",
-      "Checks that will eventually run:",
-      "- Requirement clarity",
-      "- Missing acceptance criteria",
-      "- Terminology consistency",
-      "- SDLC readiness"
-    ].join("\n");
+   const reviewComment = `
+Spec Review for ${input.issueKey}
+
+Summary:
+${summary}
+
+Description:
+${descriptionText}
+
+Mock Review Result:
+- Requirements are being reviewed.
+- No real Jira comment was posted.
+- LLM integration is not active yet.
+`.trim();
 
     auditLog({
   executionId,
@@ -79,13 +86,13 @@ export async function runSpecReviewWorkflow(
   issueKey: input.issueKey,
   message: "Mock spec review generated successfully.",
   output: {
-    commentPreview
+    commentPreview: reviewComment
   }
 });
 
 const jiraCommentResult = await postJiraCommentMock({
   issueKey: input.issueKey,
-  commentBody: commentPreview
+  commentBody: reviewComment
 });
 
 auditLog({
@@ -97,7 +104,7 @@ auditLog({
   message: "Mock Jira comment posted successfully.",
   input: {
     issueKey: input.issueKey,
-    commentBody: commentPreview
+    commentBody: reviewComment
   },
   output: jiraCommentResult
 });
@@ -115,7 +122,7 @@ return {
   issueKey: input.issueKey,
   workflowName,
   status: "completed",
-  commentPreview,
+  commentPreview: reviewComment,
   jiraComment: {
   posted: jiraCommentResult.posted,
   mode: jiraCommentResult.mode,

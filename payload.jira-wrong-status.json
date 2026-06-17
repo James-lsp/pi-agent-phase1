@@ -1,0 +1,31 @@
+{
+  "timestamp": 1730000000000,
+  "webhookEvent": "jira:issue_updated",
+  "source": "dummy-jira-webhook",
+  "issue": {
+    "id": "10002",
+    "key": "PITEST-2",
+    "fields": {
+      "summary": "Dummy ticket that should be ignored",
+      "description": "This ticket is not ready for spec review.",
+      "status": {
+        "id": "3",
+        "name": "In Progress"
+      }
+    }
+  },
+  "changelog": {
+    "id": "20002",
+    "items": [
+      {
+        "field": "status",
+        "fieldtype": "jira",
+        "fieldId": "status",
+        "from": "1",
+        "fromString": "To Do",
+        "to": "3",
+        "toString": "In Progress"
+      }
+    ]
+  }
+}
