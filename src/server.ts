@@ -9,6 +9,7 @@ import {
   normalizeJiraWebhookPayload,
   isTargetJiraStatus
 } from "./lib/jiraWebhookNormalizer.js";
+
 dotenv.config();
 
 const app = express();
@@ -155,6 +156,13 @@ app.use(
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+async function startServer(): Promise<void> {
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}
+
+startServer().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
 });
